@@ -76,9 +76,10 @@ h6 {
     --primary-bg: rgba(59, 130, 246, 0.15);
     --accent-bg: rgba(168, 85, 247, 0.15);
     --hover-bg: #334155;
-    --border-color: #334155;
+    --border-color: #475569;
     --text-color: #f1f5f9;
     --text-color-secondary: #94a3b8;
+    --text-color-primary: #f1f5f9;
     --primary-color: #60a5fa;
     --accent-color: #c084fc;
 }
@@ -139,6 +140,52 @@ main {
 .post-content>* {
     max-width: 100%;
     box-sizing: border-box;
+}
+
+/* Ensure lists are properly styled in post content */
+.post-content ul,
+.post-content ol {
+    margin: 1.5rem 0;
+    padding-left: 2rem;
+    list-style-position: outside;
+}
+
+.post-content ul {
+    list-style-type: disc;
+}
+
+.post-content ol {
+    list-style-type: decimal;
+}
+
+.post-content li {
+    margin: 0.5rem 0;
+    display: list-item;
+}
+
+.post-content ul li {
+    list-style-type: disc;
+}
+
+.post-content ol li {
+    list-style-type: decimal;
+}
+
+/* Nested lists */
+.post-content ul ul,
+.post-content ol ol,
+.post-content ul ol,
+.post-content ol ul {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.post-content ul ul {
+    list-style-type: circle;
+}
+
+.post-content ul ul ul {
+    list-style-type: square;
 }
 
 .top-row {
@@ -379,48 +426,413 @@ select:focus-visible {
     }
 }
 
-/* Code block styling */
+/* Code block styling - unified for both themes */
 pre {
-    background: var(--surface-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    margin: 1rem 0;
-    overflow-x: auto;
-    font-family: 'Courier New', Consolas, Monaco, 'Lucida Console', monospace;
-    font-size: 0.875rem;
-    line-height: 1.5;
-    white-space: pre;
-    word-wrap: normal;
-    max-width: 100%;
-    box-sizing: border-box;
+    background: var(--surface-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 0.5rem !important;
+    padding: 1rem !important;
+    margin: 1rem 0 !important;
+    overflow-x: auto !important;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    white-space: pre !important;
+    word-wrap: normal !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 pre code {
-    background: transparent;
-    border: none;
-    padding: 0;
-    font-size: inherit;
-    color: inherit;
-    border-radius: 0;
-    white-space: pre;
-    word-wrap: normal;
-    overflow-wrap: normal;
-    display: block;
-    width: fit-content;
-    min-width: 100%;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    font-size: inherit !important;
+    color: inherit !important;
+    border-radius: 0 !important;
+    white-space: pre !important;
+    word-wrap: normal !important;
+    overflow-wrap: normal !important;
+    display: block !important;
+    width: fit-content !important;
+    min-width: 100% !important;
 }
 
 code {
-    background: var(--surface-bg);
+    background: var(--surface-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 0.25rem !important;
+    padding: 0.125rem 0.25rem !important;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+    font-size: 0.875rem !important;
+    color: var(--text-color) !important;
+    word-break: break-all !important;
+    overflow-wrap: break-word !important;
+}
+
+/* Override all Prism.js defaults */
+pre[class*="language-"] {
+    background: var(--surface-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 0.5rem !important;
+    padding: 1rem !important;
+    margin: 1rem 0 !important;
+    overflow: auto !important;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    color: var(--text-color) !important;
+    text-shadow: none !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+code[class*="language-"] {
+    background: transparent !important;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    color: var(--text-color) !important;
+    text-shadow: none !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Dark theme specific overrides */
+.dark pre,
+.dark pre[class*="language-"] {
+    background: #1a1a1a !important;
+    border: 1px solid #404040 !important;
+    color: #e6e6e6 !important;
+}
+
+.dark code,
+.dark code[class*="language-"] {
+    color: #e6e6e6 !important;
+}
+
+.dark code:not([class*="language-"]) {
+    background: #2a2a2a !important;
+    border: 1px solid #404040 !important;
+    color: #e6e6e6 !important;
+}
+
+/* Light theme specific overrides */
+.light pre,
+.light pre[class*="language-"] {
+    background: #f8f9fa !important;
+    border: 1px solid #e9ecef !important;
+    color: #212529 !important;
+}
+
+.light code,
+.light code[class*="language-"] {
+    color: #212529 !important;
+}
+
+.light code:not([class*="language-"]) {
+    background: #f8f9fa !important;
+    border: 1px solid #e9ecef !important;
+    color: #212529 !important;
+}
+
+/* Prism.js theme customization */
+.light pre[class*="language-"] {
+    background: var(--surface-bg) !important;
     border: 1px solid var(--border-color);
-    border-radius: 0.25rem;
-    padding: 0.125rem 0.25rem;
-    font-family: 'Courier New', Consolas, Monaco, 'Lucida Console', monospace;
-    font-size: 0.875rem;
-    color: var(--text-color-primary);
-    word-break: break-all;
-    overflow-wrap: break-word;
+    color: var(--text-color);
+}
+
+.light code[class*="language-"] {
+    background: transparent !important;
+    color: var(--text-color);
+}
+
+.dark pre[class*="language-"] {
+    background: #1E1E1E !important;
+    border: 1px solid #404040;
+    color: #D4D4D4;
+}
+
+.dark code[class*="language-"] {
+    background: transparent !important;
+    color: #D4D4D4;
+}
+
+/* Override Prism's default styles for better dark theme integration */
+.dark pre[class*="language-"],
+.dark code[class*="language-"] {
+    text-shadow: none !important;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Force override any Prism theme defaults */
+pre[class*="language-"] {
+    padding: 1rem !important;
+    margin: 1.5rem 0 !important;
+    overflow: auto !important;
+    border-radius: 0.5rem !important;
+}
+
+/* Ensure inline code is readable in dark theme */
+.dark code:not([class*="language-"]) {
+    background: #2D2D2D !important;
+    color: #D4D4D4 !important;
+    border: 1px solid #404040;
+}
+
+.light code:not([class*="language-"]) {
+    background: var(--surface-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color);
+}
+
+/* Dark theme syntax highlighting colors - high contrast */
+.dark .token.comment,
+.dark .token.prolog,
+.dark .token.doctype,
+.dark .token.cdata {
+    color: #7cb342 !important;
+    font-style: italic;
+}
+
+.dark .token.punctuation {
+    color: #e6e6e6 !important;
+}
+
+.dark .token.property,
+.dark .token.tag,
+.dark .token.constant,
+.dark .token.symbol,
+.dark .token.deleted {
+    color: #5294cf !important;
+}
+
+.dark .token.boolean,
+.dark .token.number {
+    color: #c3e88d !important;
+}
+
+.dark .token.selector,
+.dark .token.attr-name,
+.dark .token.string,
+.dark .token.char,
+.dark .token.builtin,
+.dark .token.inserted {
+    color: #f78c6c !important;
+}
+
+.dark .token.operator,
+.dark .token.entity,
+.dark .token.url,
+.dark .language-css .token.string,
+.dark .style .token.string,
+.dark .token.variable {
+    color: #e6e6e6 !important;
+}
+
+.dark .token.atrule,
+.dark .token.attr-value,
+.dark .token.function,
+.dark .token.class-name {
+    color: #ffcb6b !important;
+}
+
+.dark .token.keyword {
+    color: #c792ea !important;
+}
+
+.dark .token.regex,
+.dark .token.important {
+    color: #f07178 !important;
+}
+
+.dark .token.important,
+.dark .token.bold {
+    font-weight: bold;
+}
+
+.dark .token.italic {
+    font-style: italic;
+}
+
+.dark .token.entity {
+    cursor: help;
+}
+
+/* Additional C# specific tokens for dark theme */
+.dark .token.namespace {
+    color: #82aaff !important;
+}
+
+.dark .token.type-name {
+    color: #82aaff !important;
+}
+
+.dark .token.method {
+    color: #ffcb6b !important;
+}
+
+.dark .token.annotation {
+    color: #bb80b3 !important;
+}
+
+.dark .token.generic {
+    color: #e6e6e6 !important;
+}
+
+/* Razor specific tokens */
+.dark .token.razor-comment {
+    color: #7cb342 !important;
+    font-style: italic;
+}
+
+.dark .token.razor-keyword {
+    color: #c792ea !important;
+}
+
+.dark .token.razor-code {
+    color: #ffcb6b !important;
+}
+
+.dark .token.razor-directive {
+    color: #bb80b3 !important;
+}
+
+.dark .token.razor-parameter {
+    color: #82aaff !important;
+}
+
+/* HTML tag colors for Razor */
+.dark .token.tag .token.tag {
+    color: #5294cf !important;
+}
+
+.dark .token.tag .token.punctuation {
+    color: #999999 !important;
+}
+
+.dark .token.attr-name {
+    color: #82aaff !important;
+}
+
+.dark .token.attr-value {
+    color: #f78c6c !important;
+}
+
+/* Light theme syntax highlighting colors - high contrast */
+.light .token.comment,
+.light .token.prolog,
+.light .token.doctype,
+.light .token.cdata {
+    color: #008000 !important;
+    font-style: italic;
+}
+
+.light .token.punctuation {
+    color: #212529 !important;
+}
+
+.light .token.property,
+.light .token.tag,
+.light .token.constant,
+.light .token.symbol,
+.light .token.deleted {
+    color: #0000ff !important;
+}
+
+.light .token.boolean,
+.light .token.number {
+    color: #000080 !important;
+}
+
+.light .token.selector,
+.light .token.attr-name,
+.light .token.string,
+.light .token.char,
+.light .token.builtin,
+.light .token.inserted {
+    color: #d73a49 !important;
+}
+
+.light .token.operator,
+.light .token.entity,
+.light .token.url,
+.light .language-css .token.string,
+.light .style .token.string,
+.light .token.variable {
+    color: #212529 !important;
+}
+
+.light .token.atrule,
+.light .token.attr-value,
+.light .token.function,
+.light .token.class-name {
+    color: #795548 !important;
+}
+
+.light .token.keyword {
+    color: #0000ff !important;
+}
+
+.light .token.regex,
+.light .token.important {
+    color: #e90 !important;
+}
+
+.light .token.important,
+.light .token.bold {
+    font-weight: bold;
+}
+
+.light .token.italic {
+    font-style: italic;
+}
+
+.light .token.entity {
+    cursor: help;
+}
+
+/* Additional C# specific tokens for light theme */
+.light .token.namespace {
+    color: #0070c0 !important;
+}
+
+.light .token.type-name {
+    color: #0070c0 !important;
+}
+
+.light .token.method {
+    color: #795548 !important;
+}
+
+.light .token.annotation {
+    color: #800080 !important;
+}
+
+.light .token.generic {
+    color: #212529 !important;
+}
+
+/* HTML tag colors for light theme */
+.light .token.tag .token.tag {
+    color: #0000ff !important;
+}
+
+.light .token.tag .token.punctuation {
+    color: #666666 !important;
+}
+
+.light .token.attr-name {
+    color: #0070c0 !important;
+}
+
+.light .token.attr-value {
+    color: #d73a49 !important;
 }
 
 /* Syntax highlighting support */

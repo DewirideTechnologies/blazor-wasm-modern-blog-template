@@ -15,7 +15,6 @@ public class MarkdownService
             .UseEmojiAndSmiley()
             .Build();
     }
-
     public string RenderMarkdown(string markdown)
     {
         if (string.IsNullOrEmpty(markdown))
@@ -23,9 +22,14 @@ public class MarkdownService
 
         // Process shortcodes first
         var processedMarkdown = ProcessShortcodes(markdown);
-        
+
         // Render markdown to HTML
-        return Markdown.ToHtml(processedMarkdown, _pipeline);
+        var html = Markdown.ToHtml(processedMarkdown, _pipeline);
+
+        // Post-process to ensure proper language classes for C# code
+        html = PostProcessCodeBlocks(html);
+
+        return html;
     }
 
     public string RenderMdx(string mdx)
@@ -35,9 +39,37 @@ public class MarkdownService
 
         // For MDX, we'll process it as enhanced markdown with more complex shortcode support
         var processedMdx = ProcessAdvancedShortcodes(mdx);
-        
+
         // Render as markdown
-        return Markdown.ToHtml(processedMdx, _pipeline);
+        var html = Markdown.ToHtml(processedMdx, _pipeline);
+
+        // Post-process to ensure proper language classes
+        html = PostProcessCodeBlocks(html);
+
+        return html;
+    }
+
+    private string PostProcessCodeBlocks(string html)
+    {
+        // Debug: Log the original HTML to see what we're working with
+        System.Diagnostics.Debug.WriteLine($"Original HTML snippet: {html.Substring(0, Math.Min(500, html.Length))}");
+
+        // First, fix code blocks that already have language classes
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"<pre><code class=""language-(\w+)""",
+            @"<pre class=""language-$1""><code class=""language-$1""",
+            RegexOptions.IgnoreCase);
+
+        // Then, fix code blocks without language classes (fallback to text)
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"<pre><code(?!\s+class=""language-)",
+            @"<pre class=""language-text""><code class=""language-text""",
+            RegexOptions.IgnoreCase);
+
+        // Debug: Log the processed HTML
+        System.Diagnostics.Debug.WriteLine($"Processed HTML snippet: {html.Substring(0, Math.Min(500, html.Length))}");
+
+        return html;
     }
 
     private string ProcessShortcodes(string content)
@@ -98,10 +130,25 @@ public class MarkdownService
         var code = ExtractAttribute(attributes, "code") ?? "";
         var title = ExtractAttribute(attributes, "title") ?? "";
 
+        // Normalize some common language aliases
+        language = language.ToLower() switch
+        {
+            "cs" => "csharp",
+            "js" => "javascript",
+            "ts" => "typescript",
+            "py" => "python",
+            "rb" => "ruby",
+            "cpp" => "cpp",
+            "c++" => "cpp",
+            "sh" => "bash",
+            "yml" => "yaml",
+            _ => language
+        };
+
         return $@"
         <div class=""code-block"">
             {(string.IsNullOrEmpty(title) ? "" : $"<div class=\"code-title\">{title}</div>")}
-            <pre><code class=""language-{language}"">{System.Web.HttpUtility.HtmlEncode(code)}</code></pre>
+            <pre class=""language-{language}""><code class=""language-{language}"">{System.Web.HttpUtility.HtmlEncode(code)}</code></pre>
         </div>";
     }
 
@@ -177,10 +224,10 @@ public class MarkdownService
         // Remove HTML tags and markdown syntax for word count
         var plainText = Regex.Replace(content, @"<[^>]+>", "");
         plainText = Regex.Replace(plainText, @"[#*`_\[\]()]+", "");
-        
+
         var words = plainText.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
         var wordCount = words.Length;
-        
+
         // Average reading speed is 200 words per minute
         return Math.Max(1, (int)Math.Ceiling(wordCount / 200.0));
     }

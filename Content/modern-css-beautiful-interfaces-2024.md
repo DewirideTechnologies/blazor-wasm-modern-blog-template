@@ -410,19 +410,19 @@ $primary: #3b82f6;
 ## Best Practices for 2024
 
 ### 1. Mobile-First Approach
-Always start with mobile designs and progressively enhance for larger screens.
+    Always start with mobile designs and progressively enhance for larger screens.
 
 ### 2. Performance Budget
-Set and stick to performance budgets for CSS file sizes and paint times.
+    Set and stick to performance budgets for CSS file sizes and paint times.
 
 ### 3. Accessibility First
-Use semantic HTML and ensure sufficient color contrast ratios.
+    Use semantic HTML and ensure sufficient color contrast ratios.
 
 ### 4. Progressive Enhancement
-Start with a basic experience and enhance with advanced CSS features.
+    Start with a basic experience and enhance with advanced CSS features.
 
 ### 5. Component-Driven Development
-Design reusable components that work in multiple contexts.
+    Design reusable components that work in multiple contexts.
 
 ## Conclusion
 

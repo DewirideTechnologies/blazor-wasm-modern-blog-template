@@ -203,10 +203,28 @@ else
     .post-content :global(ol) {
         margin: 1.5rem 0;
         padding-left: 2rem;
+        list-style-position: outside;
+    }
+
+    .post-content :global(ul) {
+        list-style-type: disc;
+    }
+
+    .post-content :global(ol) {
+        list-style-type: decimal;
     }
 
     .post-content :global(li) {
         margin: 0.5rem 0;
+        display: list-item;
+    }
+
+    .post-content :global(ul li) {
+        list-style-type: disc;
+    }
+
+    .post-content :global(ol li) {
+        list-style-type: decimal;
     }
 
     .post-content :global(blockquote) {
@@ -224,6 +242,50 @@ else
         border-radius: 0.5rem;
         margin: 2rem 0;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .post-content :global(pre) {
+        background: var(--surface-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin: 1.5rem 0;
+        overflow-x: auto;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--text-color);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .post-content :global(code) {
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.875rem;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .post-content :global(pre code) {
+        background: transparent;
+        border: none;
+        padding: 0;
+        color: inherit;
+        font-size: inherit;
+        border-radius: 0;
+    }
+
+    /* Dark theme specific overrides */
+    .dark .post-content :global(pre[class*="language-"]) {
+        background: #1E1E1E;
+        border: 1px solid #404040;
+        color: #D4D4D4;
+    }
+
+    .dark .post-content :global(code:not([class*="language-"])) {
+        background: #2D2D2D;
+        color: #D4D4D4;
+        border: 1px solid #404040;
     }
 
     .post-content :global(a) {
@@ -430,6 +492,23 @@ else
     protected override async Task OnParametersSetAsync()
     {
         await LoadPostAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_post != null)
+        {
+            try
+            {
+                // Add a small delay to ensure DOM is fully rendered
+                await Task.Delay(100);
+                await JSRuntime.InvokeVoidAsync("highlightCode");
+            }
+            catch
+            {
+                // Ignore if Prism.js is not available
+            }
+        }
     }
 
     private async Task LoadPostAsync()

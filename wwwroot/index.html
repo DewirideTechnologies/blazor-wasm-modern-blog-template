@@ -18,6 +18,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    
     <!-- Theme initialization -->
     <script>
         // Initialize theme immediately to prevent flash
@@ -48,6 +52,118 @@
 
     <script src="_framework/blazor.webassembly.js"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
+    
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-ruby.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-kotlin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-swift.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-html.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-powershell.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-razor.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-docker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-git.min.js"></script>
+    
+    <script>
+        // Robust multi-language syntax highlighting
+        window.highlightCode = () => {
+            if (typeof Prism !== 'undefined') {
+                console.log('Starting code highlighting...');
+                
+                // Find all code blocks
+                const codeBlocks = document.querySelectorAll('pre code, pre > code');
+                console.log(`Found ${codeBlocks.length} code blocks`);
+                
+                codeBlocks.forEach((codeElement, index) => {
+                    const preElement = codeElement.parentElement;
+                    
+                    if (preElement && preElement.tagName === 'PRE') {
+                        let detectedLanguage = 'text';
+                        
+                        // Check for existing language class
+                        const existingClasses = (codeElement.className || '') + ' ' + (preElement.className || '');
+                        const languageMatch = existingClasses.match(/language-(\w+)/);
+                        
+                        if (languageMatch) {
+                            detectedLanguage = languageMatch[1];
+                            console.log(`Block ${index}: Found existing language: ${detectedLanguage}`);
+                        } else {
+                            // Auto-detect from content
+                            const codeText = codeElement.textContent || '';
+                            console.log(`Block ${index}: Auto-detecting language from content: ${codeText.substring(0, 100)}...`);
+                            
+                            if (codeText.includes('@') && (codeText.includes('void') || codeText.includes('public') || codeText.includes('private') || codeText.includes('@page') || codeText.includes('@inject'))) {
+                                detectedLanguage = 'csharp';
+                            } else if (codeText.includes('function') || codeText.includes('const ') || codeText.includes('let ') || codeText.includes('=>') || codeText.includes('var ')) {
+                                detectedLanguage = 'javascript';
+                            } else if (codeText.includes('def ') || codeText.includes('import ') || codeText.includes('print(') || (codeText.includes('class ') && codeText.includes(':'))) {
+                                detectedLanguage = 'python';
+                            } else if (codeText.includes('SELECT ') || codeText.includes('FROM ') || codeText.includes('WHERE ')) {
+                                detectedLanguage = 'sql';
+                            } else if (codeText.includes('<!DOCTYPE') || codeText.includes('<html') || codeText.includes('<div')) {
+                                detectedLanguage = 'html';
+                            } else if (codeText.includes('{') && codeText.includes(':') && codeText.includes('"')) {
+                                detectedLanguage = 'json';
+                            } else if (codeText.includes('package ') && codeText.includes('func ')) {
+                                detectedLanguage = 'go';
+                            } else if (codeText.includes('fn ') && codeText.includes('println!')) {
+                                detectedLanguage = 'rust';
+                            } else if (codeText.includes('interface ') && codeText.includes(': ')) {
+                                detectedLanguage = 'typescript';
+                            }
+                            
+                            console.log(`Block ${index}: Auto-detected language: ${detectedLanguage}`);
+                        }
+                        
+                        // Apply classes
+                        codeElement.className = `language-${detectedLanguage}`;
+                        preElement.className = `language-${detectedLanguage}`;
+                        
+                        console.log(`Block ${index}: Applied language-${detectedLanguage} classes`);
+                    }
+                });
+                
+                // Force Prism to re-highlight everything
+                Prism.highlightAll();
+                console.log('Prism highlighting completed for all blocks');
+            } else {
+                console.error('Prism.js is not available!');
+            }
+        };
+        
+        // Manual trigger function for testing
+        window.forceHighlight = () => {
+            console.log('Force highlighting triggered');
+            window.highlightCode();
+        };
+        
+        // Highlight when page loads
+        window.addEventListener('load', () => {
+            console.log('Page loaded, starting highlighting');
+            setTimeout(() => {
+                if (typeof Prism !== 'undefined') {
+                    window.highlightCode();
+                }
+            }, 1000);
+        });
+    </script>
 </body>
 
 </html>

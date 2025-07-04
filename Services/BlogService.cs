@@ -31,9 +31,12 @@ public class BlogService
 
         _cachedPosts = new List<BlogPost>();
 
+        // Try multiple approaches to find blog posts
+        var loadedPosts = new List<BlogPost>();
+
+        // 1. Try to load from manifest file
         try
         {
-            // Try to get a manifest file first (you might generate this during build)
             var manifestJson = await _httpClient.GetStringAsync("content/manifest.json");
             var manifest = JsonSerializer.Deserialize<List<string>>(manifestJson, new JsonSerializerOptions
             {
@@ -47,30 +50,39 @@ public class BlogService
                     var post = await LoadPostFromFileAsync(filePath);
                     if (post != null && !post.Metadata?.Draft == true)
                     {
-                        _cachedPosts.Add(post);
+                        loadedPosts.Add(post);
                     }
                 }
             }
         }
         catch
         {
-            // Fallback: try common file names
-            var commonPosts = new[]
+            // Manifest not available, continue to other methods
+        }
+
+        // 2. Try to load known blog post files (fallback)
+        if (loadedPosts.Count == 0)
+        {
+            var knownPosts = new[]
             {
                 "welcome-to-my-blog.md",
+                "blazor-webassembly-modern-apps.mdx",
+                "modern-css-beautiful-interfaces-2024.md",
+                "code-overflow-test.md",
+                "multi-language-code-examples.md",
                 "getting-started.md",
                 "hello-world.md",
                 "first-post.md"
             };
 
-            foreach (var fileName in commonPosts)
+            foreach (var fileName in knownPosts)
             {
                 try
                 {
                     var post = await LoadPostFromFileAsync(fileName);
                     if (post != null && !post.Metadata?.Draft == true)
                     {
-                        _cachedPosts.Add(post);
+                        loadedPosts.Add(post);
                     }
                 }
                 catch
@@ -79,6 +91,8 @@ public class BlogService
                 }
             }
         }
+
+        _cachedPosts = loadedPosts;
 
         // Sort by publish date descending
         _cachedPosts = _cachedPosts.OrderByDescending(p => p.PublishDate).ToList();
@@ -114,7 +128,7 @@ public class BlogService
         {
             var fullPath = filePath.StartsWith("content/") ? filePath : $"content/{filePath}";
             var content = await _httpClient.GetStringAsync(fullPath);
-            
+
             return ParseBlogPost(content, filePath);
         }
         catch
@@ -126,7 +140,7 @@ public class BlogService
     private BlogPost? ParseBlogPost(string fileContent, string filePath)
     {
         var match = FrontMatterRegex.Match(fileContent);
-        
+
         if (!match.Success)
         {
             // No frontmatter, create a basic post
@@ -135,7 +149,7 @@ public class BlogService
                 Title = Path.GetFileNameWithoutExtension(filePath),
                 Slug = CreateSlugFromFileName(filePath),
                 Content = fileContent,
-                RenderedContent = Path.GetExtension(filePath).ToLower() == ".mdx" 
+                RenderedContent = Path.GetExtension(filePath).ToLower() == ".mdx"
                     ? _markdownService.RenderMdx(fileContent)
                     : _markdownService.RenderMarkdown(fileContent),
                 FilePath = filePath,
@@ -151,7 +165,7 @@ public class BlogService
         try
         {
             var metadata = _yamlDeserializer.Deserialize<BlogPostMetadata>(frontMatterYaml);
-            
+
             if (metadata == null)
                 return null;
 
@@ -166,7 +180,7 @@ public class BlogService
                 PublishDate = metadata.PublishDate,
                 Summary = metadata.Summary,
                 Tags = metadata.Tags ?? new List<string>(),
-                Format = !string.IsNullOrEmpty(metadata.Format) ? metadata.Format : 
+                Format = !string.IsNullOrEmpty(metadata.Format) ? metadata.Format :
                         (Path.GetExtension(filePath).ToLower() == ".mdx" ? "mdx" : "md"),
                 FilePath = filePath,
                 Content = markdownContent,
