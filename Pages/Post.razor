@@ -1,0 +1,494 @@
+@page "/post/{slug}"
+@inject BlogService BlogService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+@if (_post != null)
+{
+    <PageTitle>@_post.Title - Blog</PageTitle>
+    
+    <article class="post-detail">
+        <header class="post-header">
+            <div class="post-meta">
+                <time class="post-date">@_post.PublishDate.ToString("MMMM dd, yyyy")</time>
+                <span class="post-read-time">@(_post.Metadata?.ReadTimeMinutes ?? 5) min read</span>
+            </div>
+            
+            <h1 class="post-title">@_post.Title</h1>
+            
+            @if (!string.IsNullOrEmpty(_post.Summary))
+            {
+                <p class="post-summary">@_post.Summary</p>
+            }
+            
+            <div class="post-author-info">
+                <span class="post-author">By @_post.Author</span>
+            </div>
+            
+            @if (_post.Tags.Any())
+            {
+                <div class="post-tags">
+                    @foreach (var tag in _post.Tags)
+                    {
+                        <button class="post-tag" @onclick="() => NavigateToTag(tag)">@tag</button>
+                    }
+                </div>
+            }
+        </header>
+        
+        <div class="post-content">
+            @((MarkupString)_post.RenderedContent)
+        </div>
+        
+        <footer class="post-footer">
+            <div class="post-actions">
+                <button class="btn-secondary" @onclick="GoBack">
+                    ← Back to Posts
+                </button>
+                <button class="btn-secondary" @onclick="SharePost">
+                    Share
+                </button>
+            </div>
+        </footer>
+    </article>
+}
+else if (_isLoading)
+{
+    <div class="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading post...</p>
+    </div>
+}
+else
+{
+    <div class="not-found">
+        <div class="not-found-icon">📄</div>
+        <h1>Post Not Found</h1>
+        <p>The post you're looking for doesn't exist or has been moved.</p>
+        <button class="btn-primary" @onclick="GoHome">
+            Go to Homepage
+        </button>
+    </div>
+}
+
+<style>
+    .post-detail {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        overflow-x: hidden;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .post-header {
+        margin-bottom: 3rem;
+        text-align: center;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .post-meta {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-color-secondary);
+    }
+
+    .post-date {
+        font-weight: 500;
+    }
+
+    .post-read-time {
+        background: var(--primary-bg);
+        color: var(--primary-color);
+        padding: 0.3rem 0.8rem;
+        border-radius: 1rem;
+        font-weight: 500;
+    }
+
+    .post-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin: 0 0 1.5rem 0;
+        color: var(--text-color);
+        line-height: 1.2;
+    }
+
+    .post-summary {
+        font-size: 1.1rem;
+        color: var(--text-color-secondary);
+        line-height: 1.6;
+        margin: 0 0 1.5rem 0;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .post-author-info {
+        margin-bottom: 1.5rem;
+    }
+
+    .post-author {
+        font-weight: 600;
+        color: var(--text-color);
+    }
+
+    .post-tags {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .post-tag {
+        background: var(--accent-bg);
+        color: var(--accent-color);
+        border: 1px solid var(--accent-color);
+        padding: 0.4rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .post-tag:hover {
+        background: var(--accent-color);
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .post-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: var(--text-color);
+        margin-bottom: 3rem;
+        max-width: 100%;
+        overflow-x: hidden;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .post-content > :global(*) {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .post-content :global(h1),
+    .post-content :global(h2),
+    .post-content :global(h3),
+    .post-content :global(h4),
+    .post-content :global(h5),
+    .post-content :global(h6) {
+        color: var(--text-color);
+        font-weight: 700;
+        margin: 2rem 0 1rem 0;
+        line-height: 1.3;
+    }
+
+    .post-content :global(h1) { font-size: 2rem; }
+    .post-content :global(h2) { font-size: 1.75rem; }
+    .post-content :global(h3) { font-size: 1.5rem; }
+    .post-content :global(h4) { font-size: 1.25rem; }
+
+    .post-content :global(p) {
+        margin: 1.5rem 0;
+    }
+
+    .post-content :global(ul),
+    .post-content :global(ol) {
+        margin: 1.5rem 0;
+        padding-left: 2rem;
+    }
+
+    .post-content :global(li) {
+        margin: 0.5rem 0;
+    }
+
+    .post-content :global(blockquote) {
+        border-left: 4px solid var(--primary-color);
+        padding: 1rem 1.5rem;
+        margin: 2rem 0;
+        background: var(--surface-bg);
+        border-radius: 0.5rem;
+        font-style: italic;
+    }
+
+    .post-content :global(img) {
+        max-width: 100%;
+        height: auto;
+        border-radius: 0.5rem;
+        margin: 2rem 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .post-content :global(a) {
+        color: var(--primary-color);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.2s ease;
+    }
+
+    .post-content :global(a:hover) {
+        border-bottom-color: var(--primary-color);
+    }
+
+    .post-content :global(table) {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 2rem 0;
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+
+    .post-content :global(th),
+    .post-content :global(td) {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .post-content :global(th) {
+        background: var(--surface-bg);
+        font-weight: 600;
+    }
+
+    /* Shortcode styles */
+    .post-content :global(.alert) {
+        padding: 1rem 1.5rem;
+        border-radius: 0.5rem;
+        margin: 2rem 0;
+        border-left: 4px solid;
+    }
+
+    .post-content :global(.alert-info) {
+        background: rgba(59, 130, 246, 0.1);
+        border-left-color: #3b82f6;
+        color: var(--text-color);
+    }
+
+    .post-content :global(.alert-warning) {
+        background: rgba(245, 158, 11, 0.1);
+        border-left-color: #f59e0b;
+        color: var(--text-color);
+    }
+
+    .post-content :global(.alert-error) {
+        background: rgba(239, 68, 68, 0.1);
+        border-left-color: #ef4444;
+        color: var(--text-color);
+    }
+
+    .post-content :global(.alert-success) {
+        background: rgba(34, 197, 94, 0.1);
+        border-left-color: #22c55e;
+        color: var(--text-color);
+    }
+
+    .post-content :global(.callout) {
+        background: var(--surface-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .post-content :global(.callout-title) {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--primary-color);
+    }
+
+    .post-footer {
+        padding-top: 2rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .post-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .btn-secondary,
+    .btn-primary {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        border: none;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-secondary {
+        background: var(--surface-bg);
+        color: var(--text-color);
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        background: var(--hover-bg);
+        border-color: var(--primary-color);
+        transform: translateY(-1px);
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-color);
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+    }
+
+    .loading,
+    .not-found {
+        text-align: center;
+        padding: 4rem 2rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .loading-spinner {
+        width: 3rem;
+        height: 3rem;
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem auto;
+    }
+
+    .not-found-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .not-found h1 {
+        font-size: 2rem;
+        margin: 0 0 1rem 0;
+        color: var(--text-color);
+    }
+
+    .not-found p {
+        color: var(--text-color-secondary);
+        margin: 0 0 2rem 0;
+        font-size: 1.1rem;
+    }
+
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @@media (max-width: 768px) {
+        .post-detail {
+            padding: 1rem;
+        }
+
+        .post-title {
+            font-size: 2rem;
+        }
+
+        .post-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .post-actions {
+            flex-direction: column;
+        }
+
+        .post-content {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+@code {
+    [Parameter] public string Slug { get; set; } = string.Empty;
+
+    private BlogPost? _post;
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPostAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadPostAsync();
+    }
+
+    private async Task LoadPostAsync()
+    {
+        _isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            _post = await BlogService.GetPostBySlugAsync(Slug);
+        }
+        catch (Exception)
+        {
+            _post = null;
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void GoHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void NavigateToTag(string tag)
+    {
+        Navigation.NavigateTo($"/?tag={Uri.EscapeDataString(tag)}");
+    }
+
+    private async Task SharePost()
+    {
+        if (_post != null)
+        {
+            var url = Navigation.Uri;
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", url);
+                // You could add a toast notification here
+            }
+            catch
+            {
+                // Fallback for older browsers
+                try
+                {
+                    await JSRuntime.InvokeVoidAsync("prompt", "Copy this URL:", url);
+                }
+                catch
+                {
+                    // Silent fallback
+                }
+            }
+        }
+    }
+}

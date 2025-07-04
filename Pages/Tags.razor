@@ -1,0 +1,414 @@
+@page "/tags"
+@inject BlogService BlogService
+@inject NavigationManager Navigation
+
+<PageTitle>Tags - Blog</PageTitle>
+
+<div class="tags-page">
+    <div class="page-header">
+        <h1 class="page-title">Browse by Tags</h1>
+        <p class="page-subtitle">Explore posts organized by topic</p>
+    </div>
+
+    @if (_isLoading)
+    {
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading tags...</p>
+        </div>
+    }
+    else if (_taggedPosts.Any())
+    {
+        <div class="tags-grid">
+            @foreach (var tagGroup in _taggedPosts.OrderByDescending(t => t.Posts.Count))
+            {
+                <div class="tag-group">
+                    <div class="tag-header" @onclick="() => ToggleTag(tagGroup.Tag)">
+                        <h3 class="tag-name">#@tagGroup.Tag</h3>
+                        <div class="tag-meta">
+                            <span class="post-count">@tagGroup.Posts.Count post@(tagGroup.Posts.Count == 1 ? "" : "s")</span>
+                            <span class="toggle-icon @(_expandedTags.Contains(tagGroup.Tag) ? "expanded" : "")">
+                                ▼
+                            </span>
+                        </div>
+                    </div>
+                    
+                    @if (_expandedTags.Contains(tagGroup.Tag))
+                    {
+                        <div class="tag-posts">
+                            @foreach (var post in tagGroup.Posts.OrderByDescending(p => p.PublishDate))
+                            {
+                                <article class="mini-post-card" @onclick="() => NavigateToPost(post.Slug)">
+                                    <div class="mini-post-content">
+                                        <h4 class="mini-post-title">@post.Title</h4>
+                                        <div class="mini-post-meta">
+                                            <time class="mini-post-date">@post.PublishDate.ToString("MMM dd, yyyy")</time>
+                                            <span class="mini-post-author">@post.Author</span>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(post.Summary))
+                                        {
+                                            <p class="mini-post-summary">@post.Summary</p>
+                                        }
+                                    </div>
+                                </article>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-icon">🏷️</div>
+            <h3>No tags found</h3>
+            <p>No blog posts with tags are available yet.</p>
+            <a href="/" class="btn-primary">Browse all posts</a>
+        </div>
+    }
+</div>
+
+<style>
+    .tags-page {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 3rem 0;
+        background: linear-gradient(135deg, var(--primary-bg), var(--accent-bg));
+        border-radius: 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
+        pointer-events: none;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin: 0 0 1rem 0;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+        z-index: 1;
+    }
+
+    .page-subtitle {
+        font-size: 1.2rem;
+        color: var(--text-color-secondary);
+        margin: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 4rem 0;
+    }
+
+    .loading-spinner {
+        width: 3rem;
+        height: 3rem;
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem auto;
+    }
+
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .tags-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .tag-group {
+        background: var(--surface-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .tag-group:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .tag-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        user-select: none;
+    }
+
+    .tag-header:hover {
+        background: var(--hover-bg);
+    }
+
+    .tag-name {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--primary-color);
+    }
+
+    .tag-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .post-count {
+        font-size: 0.9rem;
+        color: var(--text-color-secondary);
+        font-weight: 500;
+    }
+
+    .toggle-icon {
+        font-size: 0.8rem;
+        color: var(--text-color-secondary);
+        transition: transform 0.3s ease;
+    }
+
+    .toggle-icon.expanded {
+        transform: rotate(180deg);
+    }
+
+    .tag-posts {
+        padding: 0 2rem 2rem 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        to {
+            opacity: 1;
+            max-height: 1000px;
+            padding-top: 0;
+            padding-bottom: 2rem;
+        }
+    }
+
+    .mini-post-card {
+        background: var(--background);
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .mini-post-card:hover {
+        background: var(--hover-bg);
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .mini-post-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+        color: var(--text-color);
+        line-height: 1.4;
+    }
+
+    .mini-post-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.85rem;
+        color: var(--text-color-secondary);
+    }
+
+    .mini-post-date {
+        font-weight: 500;
+    }
+
+    .mini-post-author::before {
+        content: "by ";
+        opacity: 0.7;
+    }
+
+    .mini-post-summary {
+        color: var(--text-color-secondary);
+        line-height: 1.5;
+        margin: 0;
+        font-size: 0.9rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 0;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin: 0 0 0.5rem 0;
+        color: var(--text-color);
+    }
+
+    .empty-state p {
+        color: var(--text-color-secondary);
+        margin: 0 0 2rem 0;
+    }
+
+    .btn-primary {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: var(--primary-color);
+        color: white;
+        text-decoration: none;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-color);
+        filter: brightness(1.1);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    @@media (max-width: 768px) {
+        .tags-page {
+            padding: 1rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+        }
+
+        .tag-header {
+            padding: 1.25rem 1.5rem;
+        }
+
+        .tag-posts {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+
+        .mini-post-card {
+            padding: 1rem;
+        }
+
+        .tag-meta {
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.5rem;
+        }
+    }
+</style>
+
+@code {
+    private List<TaggedPosts> _taggedPosts = new();
+    private HashSet<string> _expandedTags = new();
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTagsAsync();
+    }
+
+    private async Task LoadTagsAsync()
+    {
+        try
+        {
+            var posts = await BlogService.GetAllPostsAsync();
+            var tags = await BlogService.GetAllTagsAsync();
+
+            _taggedPosts = tags.Select(tag => new TaggedPosts
+            {
+                Tag = tag,
+                Posts = posts.Where(p => p.Tags.Contains(tag, StringComparer.OrdinalIgnoreCase)).ToList()
+            }).ToList();
+
+            // Auto-expand the first tag if any
+            if (_taggedPosts.Any())
+            {
+                _expandedTags.Add(_taggedPosts.First().Tag);
+            }
+        }
+        catch (Exception)
+        {
+            _taggedPosts = new List<TaggedPosts>();
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ToggleTag(string tag)
+    {
+        if (_expandedTags.Contains(tag))
+        {
+            _expandedTags.Remove(tag);
+        }
+        else
+        {
+            _expandedTags.Add(tag);
+        }
+        StateHasChanged();
+    }
+
+    private void NavigateToPost(string slug)
+    {
+        Navigation.NavigateTo($"/post/{slug}");
+    }
+
+    private class TaggedPosts
+    {
+        public string Tag { get; set; } = string.Empty;
+        public List<BlogPost> Posts { get; set; } = new();
+    }
+}

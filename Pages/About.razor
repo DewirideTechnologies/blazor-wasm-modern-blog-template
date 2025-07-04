@@ -1,0 +1,331 @@
+@page "/about"
+
+<PageTitle>About - Blog</PageTitle>
+
+<div class="about-page">
+    <div class="about-header">
+        <h1 class="about-title">About Me</h1>
+        <p class="about-subtitle">Welcome to my corner of the internet</p>
+    </div>
+
+    <div class="about-content">
+        <section class="about-section">
+            <div class="section-icon">👋</div>
+            <h2>Hello, I'm [Your Name]</h2>
+            <p>
+                I'm a passionate developer, writer, and technology enthusiast. This blog is where I share my thoughts,
+                experiences, and insights about software development, design, and the ever-evolving world of technology.
+            </p>
+        </section>
+
+        <section class="about-section">
+            <div class="section-icon">💡</div>
+            <h2>What I Write About</h2>
+            <div class="topics-grid">
+                <div class="topic-card">
+                    <h3>Technology</h3>
+                    <p>Latest trends, frameworks, and tools in software development</p>
+                </div>
+                <div class="topic-card">
+                    <h3>Design</h3>
+                    <p>User experience, interface design, and modern web aesthetics</p>
+                </div>
+                <div class="topic-card">
+                    <h3>Development</h3>
+                    <p>Best practices, tutorials, and coding insights</p>
+                </div>
+                <div class="topic-card">
+                    <h3>Life</h3>
+                    <p>Personal experiences, lessons learned, and reflections</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <div class="section-icon">🛠️</div>
+            <h2>What I Use</h2>
+            <div class="tech-stack">
+                <div class="tech-category">
+                    <h4>Languages</h4>
+                    <div class="tech-tags">
+                        <span class="tech-tag">C#</span>
+                        <span class="tech-tag">JavaScript</span>
+                        <span class="tech-tag">TypeScript</span>
+                        <span class="tech-tag">Python</span>
+                    </div>
+                </div>
+                <div class="tech-category">
+                    <h4>Frameworks</h4>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Blazor</span>
+                        <span class="tech-tag">React</span>
+                        <span class="tech-tag">Vue.js</span>
+                        <span class="tech-tag">.NET</span>
+                    </div>
+                </div>
+                <div class="tech-category">
+                    <h4>Tools</h4>
+                    <div class="tech-tags">
+                        <span class="tech-tag">VS Code</span>
+                        <span class="tech-tag">Git</span>
+                        <span class="tech-tag">Docker</span>
+                        <span class="tech-tag">Azure</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <div class="section-icon">📫</div>
+            <h2>Get in Touch</h2>
+            <p>
+                I love connecting with fellow developers and readers. Feel free to reach out if you have questions,
+                suggestions, or just want to chat about technology!
+            </p>
+            <div class="contact-links">
+                <a href="mailto:your.email@example.com" class="contact-link">
+                    <span class="contact-icon">📧</span>
+                    <span>Email</span>
+                </a>
+                <a href="https://twitter.com/yourusername" target="_blank" class="contact-link">
+                    <span class="contact-icon">🐦</span>
+                    <span>Twitter</span>
+                </a>
+                <a href="https://github.com/yourusername" target="_blank" class="contact-link">
+                    <span class="contact-icon">💻</span>
+                    <span>GitHub</span>
+                </a>
+                <a href="https://linkedin.com/in/yourusername" target="_blank" class="contact-link">
+                    <span class="contact-icon">💼</span>
+                    <span>LinkedIn</span>
+                </a>
+            </div>
+        </section>
+    </div>
+</div>
+
+<style>
+    .about-page {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .about-header {
+        text-align: center;
+        margin-bottom: 4rem;
+        padding: 3rem 0;
+        background: linear-gradient(135deg, var(--primary-bg), var(--accent-bg));
+        border-radius: 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .about-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
+        pointer-events: none;
+    }
+
+    .about-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin: 0 0 1rem 0;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+        z-index: 1;
+    }
+
+    .about-subtitle {
+        font-size: 1.2rem;
+        color: var(--text-color-secondary);
+        margin: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .about-content {
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+    }
+
+    .about-section {
+        background: var(--surface-bg);
+        padding: 2rem;
+        border-radius: 1rem;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+    .about-section:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary-color);
+    }
+
+    .section-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .about-section h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0 0 1rem 0;
+        color: var(--text-color);
+    }
+
+    .about-section p {
+        color: var(--text-color-secondary);
+        line-height: 1.7;
+        margin: 0 0 1.5rem 0;
+    }
+
+    .topics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .topic-card {
+        background: var(--background);
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        border: 1px solid var(--border-color);
+        transition: all 0.2s ease;
+    }
+
+    .topic-card:hover {
+        background: var(--hover-bg);
+        border-color: var(--primary-color);
+    }
+
+    .topic-card h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+        color: var(--primary-color);
+    }
+
+    .topic-card p {
+        font-size: 0.9rem;
+        margin: 0;
+        opacity: 0.8;
+    }
+
+    .tech-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .tech-category h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0 0 0.75rem 0;
+        color: var(--text-color);
+    }
+
+    .tech-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .tech-tag {
+        background: var(--primary-bg);
+        color: var(--primary-color);
+        padding: 0.4rem 0.8rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        border: 1px solid var(--primary-color);
+        transition: all 0.2s ease;
+    }
+
+    .tech-tag:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .contact-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .contact-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        background: var(--background);
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        color: var(--text-color);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+
+    .contact-link:hover {
+        background: var(--hover-bg);
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .contact-icon {
+        font-size: 1.2rem;
+    }
+
+    @@media (max-width: 768px) {
+        .about-page {
+            padding: 1rem;
+        }
+
+        .about-title {
+            font-size: 2rem;
+        }
+
+        .about-subtitle {
+            font-size: 1rem;
+        }
+
+        .topics-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .contact-links {
+            justify-content: center;
+        }
+
+        .contact-link {
+            flex: 1;
+            justify-content: center;
+            min-width: 120px;
+        }
+
+        .tech-stack {
+            gap: 1rem;
+        }
+
+        .about-section {
+            padding: 1.5rem;
+        }
+    }
+</style>

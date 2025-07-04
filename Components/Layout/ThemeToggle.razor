@@ -1,0 +1,108 @@
+@implements IDisposable
+@inject ThemeService ThemeService
+
+<button class="theme-toggle" @onclick="ToggleTheme" title="Toggle theme">
+    <span class="theme-icon">
+        @if (ThemeService.CurrentTheme == "light")
+        {
+            <span class="icon">🌙</span>
+        }
+        else if (ThemeService.CurrentTheme == "dark")
+        {
+            <span class="icon">🔅</span>
+        }
+        else
+        {
+            <span class="icon">💻</span>
+        }
+    </span>
+    <span class="theme-label">@GetThemeLabel()</span>
+</button>
+
+<style>
+    .theme-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: var(--surface-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        color: var(--text-color);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .theme-toggle:hover {
+        background: var(--hover-bg);
+        border-color: var(--primary-color);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .theme-toggle:active {
+        transform: translateY(0);
+    }
+
+    .theme-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+
+    .icon {
+        font-size: 1rem;
+        transition: transform 0.2s ease;
+    }
+
+    .theme-toggle:hover .icon {
+        transform: scale(1.1);
+    }
+
+    .theme-label {
+        font-size: 0.85rem;
+        opacity: 0.9;
+    }
+
+    @@media (max-width: 768px) {
+        .theme-toggle {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+        
+        .theme-label {
+            display: none;
+        }
+    }
+</style>
+
+@code {
+    protected override void OnInitialized()
+    {
+        ThemeService.OnThemeChanged += StateHasChanged;
+    }
+
+    private async Task ToggleTheme()
+    {
+        await ThemeService.ToggleThemeAsync();
+    }
+
+    private string GetThemeLabel()
+    {
+        return ThemeService.CurrentTheme switch
+        {
+            "light" => "Light",
+            "dark" => "Dark", 
+            _ => "System"
+        };
+    }
+
+    public void Dispose()
+    {
+        ThemeService.OnThemeChanged -= StateHasChanged;
+    }
+}

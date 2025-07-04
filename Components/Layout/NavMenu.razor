@@ -1,0 +1,122 @@
+@inject NavigationManager Navigation
+
+<div class="nav-menu">
+    <div class="nav-brand">
+        <NavLink href="/" class="brand-link">
+            <h1 class="brand-title">Blog</h1>
+        </NavLink>
+    </div>
+    
+    <nav class="nav-links">
+        <NavLink href="/" class="nav-link" Match="NavLinkMatch.All">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Home</span>
+        </NavLink>
+        
+        <NavLink href="/about" class="nav-link">
+            <span class="nav-icon">👤</span>
+            <span class="nav-text">About</span>
+        </NavLink>
+        
+        <NavLink href="/tags" class="nav-link">
+            <span class="nav-icon">🏷️</span>
+            <span class="nav-text">Tags</span>
+        </NavLink>
+    </nav>
+</div>
+
+<style>
+    .nav-menu {
+        padding: 2rem 1.5rem;
+        height: 100vh;
+        background: var(--nav-bg);
+        border-right: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .nav-brand {
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1.5rem;
+    }
+
+    .brand-link {
+        text-decoration: none;
+        color: var(--text-color);
+    }
+
+    .brand-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .nav-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        text-decoration: none;
+        color: var(--text-color-secondary);
+        border-radius: 0.5rem;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+
+    .nav-link:hover {
+        color: var(--text-color);
+        background: var(--hover-bg);
+        transform: translateX(2px);
+    }
+
+    .nav-link.active {
+        color: var(--primary-color);
+        background: var(--primary-bg);
+        font-weight: 600;
+    }
+
+    .nav-icon {
+        font-size: 1.2rem;
+        opacity: 0.8;
+    }
+
+    .nav-text {
+        font-size: 0.95rem;
+    }
+
+    @@media (max-width: 768px) {
+        .nav-menu {
+            padding: 1rem;
+            height: auto;
+        }
+        
+        .nav-links {
+            flex-direction: row;
+            overflow-x: auto;
+            gap: 0.25rem;
+        }
+        
+        .nav-link {
+            flex: 0 0 auto;
+            padding: 0.5rem;
+            flex-direction: column;
+            gap: 0.25rem;
+            min-width: 60px;
+        }
+        
+        .nav-text {
+            font-size: 0.75rem;
+        }
+    }
+</style>

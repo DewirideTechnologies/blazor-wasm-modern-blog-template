@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Blog",
+      "type": "blazorwasm",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "browser": "edge",
+      "url": "http://localhost:5000",
+      "webRoot": "${workspaceFolder}/wwwroot"
+    }
+  ]
+}

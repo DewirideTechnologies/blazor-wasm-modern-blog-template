@@ -1,0 +1,273 @@
+---
+title: "Building Modern Web Apps with Blazor WebAssembly"
+slug: "blazor-webassembly-modern-apps"
+author: "Your Name"
+publishDate: 2024-01-10T14:30:00Z
+summary: "Explore how Blazor WebAssembly is revolutionizing web development by bringing C# to the browser with near-native performance."
+tags: ["blazor", "webassembly", "csharp", "dotnet", "tutorial"]
+format: "mdx"
+category: "Development"
+featuredImage: "/images/blazor-hero.jpg"
+draft: false
+---
+
+# Building Modern Web Apps with Blazor WebAssembly
+
+Blazor WebAssembly has been a game-changer for .NET developers who want to build rich, interactive web applications without leaving the comfort of C#. In this post, we'll explore what makes Blazor WebAssembly special and how you can leverage it to build modern web applications.
+
+## What is Blazor WebAssembly?
+
+Blazor WebAssembly allows you to run C# code directly in the browser using WebAssembly. This means you can:
+
+- Write client-side logic in C#
+- Share code between client and server
+- Leverage the entire .NET ecosystem
+- Build SPAs without JavaScript frameworks
+
+[[Callout type="note" title="Performance Note" content="While Blazor WebAssembly apps have a larger initial download size, they often provide better performance for complex applications due to optimized execution and reduced serialization overhead."]]
+
+## Key Advantages
+
+### 1. Language Consistency
+With Blazor, you can use C# across your entire stack:
+
+```csharp
+// Shared model classes
+public class BlogPost
+{
+    public string Title { get; set; }
+    public string Content { get; set; }
+    public DateTime PublishDate { get; set; }
+}
+
+// Client-side component
+@page "/posts/{id:int}"
+@inject HttpClient Http
+
+<h1>@post?.Title</h1>
+<div>@((MarkupString)post?.Content)</div>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private BlogPost? post;
+
+    protected override async Task OnInitializedAsync()
+    {
+        post = await Http.GetFromJsonAsync<BlogPost>($"api/posts/{Id}");
+    }
+}
+```
+
+### 2. Rich Component Model
+Blazor's component model is intuitive and powerful:
+
+```csharp
+@* Reusable card component *@
+<div class="card @CssClass">
+    <div class="card-header">
+        <h3>@Title</h3>
+    </div>
+    <div class="card-body">
+        @ChildContent
+    </div>
+    @if (ShowFooter)
+    {
+        <div class="card-footer">
+            @FooterContent
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string CssClass { get; set; } = "";
+    [Parameter] public bool ShowFooter { get; set; } = false;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? FooterContent { get; set; }
+}
+```
+
+## Building a Real-World Example
+
+Let's build a simple task management component to demonstrate Blazor's capabilities:
+
+[[Code lang="csharp" title="TaskManager.razor" code="@page \"/tasks\"
+@using System.ComponentModel.DataAnnotations
+
+<div class=\"task-manager\">
+    <h2>Task Manager</h2>
+    
+    <EditForm Model=\"newTask\" OnValidSubmit=\"AddTask\">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        
+        <div class=\"form-group\">
+            <InputText @bind-Value=\"newTask.Title\" placeholder=\"Enter task title\" />
+        </div>
+        <div class=\"form-group\">
+            <InputTextArea @bind-Value=\"newTask.Description\" placeholder=\"Task description\" />
+        </div>
+        <button type=\"submit\" class=\"btn btn-primary\">Add Task</button>
+    </EditForm>
+    
+    <div class=\"task-list\">
+        @foreach (var task in tasks)
+        {
+            <div class=\"task-item @(task.IsCompleted ? \"completed\" : \"\")\">
+                <div class=\"task-content\">
+                    <h4>@task.Title</h4>
+                    <p>@task.Description</p>
+                </div>
+                <div class=\"task-actions\">
+                    <button @onclick=\"() => ToggleTask(task)\" 
+                            class=\"btn btn-sm @(task.IsCompleted ? \"btn-warning\" : \"btn-success\")\">
+                        @(task.IsCompleted ? \"Undo\" : \"Complete\")
+                    </button>
+                    <button @onclick=\"() => DeleteTask(task)\" class=\"btn btn-sm btn-danger\">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<TaskItem> tasks = new();
+    private TaskItem newTask = new();
+
+    private void AddTask()
+    {
+        if (!string.IsNullOrWhiteSpace(newTask.Title))
+        {
+            tasks.Add(new TaskItem 
+            { 
+                Id = Guid.NewGuid(),
+                Title = newTask.Title,
+                Description = newTask.Description,
+                CreatedAt = DateTime.Now
+            });
+            newTask = new TaskItem();
+        }
+    }
+
+    private void ToggleTask(TaskItem task)
+    {
+        task.IsCompleted = !task.IsCompleted;
+        task.CompletedAt = task.IsCompleted ? DateTime.Now : null;
+    }
+
+    private void DeleteTask(TaskItem task)
+    {
+        tasks.Remove(task);
+    }
+
+    public class TaskItem
+    {
+        public Guid Id { get; set; }
+        
+        [Required, StringLength(100)]
+        public string Title { get; set; } = \"\";
+        
+        [StringLength(500)]
+        public string Description { get; set; } = \"\";
+        
+        public bool IsCompleted { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? CompletedAt { get; set; }
+    }
+}"]]
+
+## Performance Optimization Tips
+
+### 1. Use `@key` for Dynamic Lists
+When rendering dynamic lists, use the `@key` directive to help Blazor optimize rendering:
+
+```html
+@foreach (var item in items)
+{
+    <div @key="item.Id">
+        @item.Name
+    </div>
+}
+```
+
+### 2. Implement `ShouldRender()`
+For components that update frequently, override `ShouldRender()` to control when re-rendering occurs:
+
+```csharp
+protected override bool ShouldRender()
+{
+    // Only re-render if important state has changed
+    return hasImportantChanges;
+}
+```
+
+### 3. Use `StateHasChanged()` Judiciously
+Call `StateHasChanged()` only when necessary to trigger component updates:
+
+```csharp
+private async Task LoadDataAsync()
+{
+    isLoading = true;
+    StateHasChanged(); // Update UI to show loading state
+    
+    data = await DataService.GetDataAsync();
+    
+    isLoading = false;
+    StateHasChanged(); // Update UI with loaded data
+}
+```
+
+## Deployment Strategies
+
+Blazor WebAssembly apps can be deployed as static sites to:
+
+- **Azure Static Web Apps**: Built-in CI/CD and global distribution
+- **GitHub Pages**: Free hosting for open-source projects
+- **Netlify**: Easy deployment with form handling and functions
+- **Vercel**: Excellent performance and developer experience
+
+[[Alert type="success" title="Deployment Tip" message="Remember to configure your hosting provider to serve the index.html file for all routes to support client-side routing!"]]
+
+## Common Pitfalls and Solutions
+
+### 1. Large Initial Download Size
+**Problem**: Blazor WebAssembly apps can have large initial payloads.
+
+**Solutions**:
+- Use lazy loading for features
+- Implement progressive web app (PWA) caching
+- Optimize assemblies with IL trimming
+
+### 2. SEO Considerations
+**Problem**: Client-side rendering can impact SEO.
+
+**Solutions**:
+- Use Blazor Server for SEO-critical pages
+- Implement prerendering for static content
+- Consider hybrid approaches
+
+### 3. Browser Compatibility
+**Problem**: WebAssembly requires modern browsers.
+
+**Solutions**:
+- Provide fallbacks for older browsers
+- Use feature detection
+- Consider Blazor Server as a fallback
+
+## Conclusion
+
+Blazor WebAssembly represents a significant step forward for .NET developers who want to build modern web applications. While it comes with some trade-offs, the benefits of language consistency, rich tooling, and the ability to leverage existing .NET skills make it a compelling choice for many projects.
+
+The ecosystem is rapidly maturing, with improved tooling, better performance, and growing community support. If you're a .NET developer looking to build modern web apps, Blazor WebAssembly is definitely worth exploring.
+
+## Resources
+
+- [Official Blazor Documentation](https://docs.microsoft.com/en-us/aspnet/core/blazor/)
+- [Blazor University](https://blazor-university.com/)
+- [Awesome Blazor](https://github.com/AdrienTorris/awesome-blazor)
+
+---
+
+*Have you tried Blazor WebAssembly for your projects? I'd love to hear about your experiences in the comments below!*
